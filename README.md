@@ -2,6 +2,8 @@
 
 A vector database written from scratch in Go, with no dependencies outside the standard library.
 
+**Live demo: https://quiver-i5qu.onrender.com** (read-only, free tier, so the first load after a quiet spell takes up to a minute)
+
 It has an HNSW index, a write-ahead log with group commit, snapshots, crash recovery, payload filters and an HTTP API. The distance kernels are hand-written ARM64 NEON assembly. On SIFT1M it lands between FAISS and hnswlib at the same recall.
 
 ![search UI](docs/ui.png)

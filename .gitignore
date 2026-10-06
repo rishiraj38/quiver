@@ -1,0 +1,9 @@
+/bin/
+/data/
+/bench/datasets/
+/bench/.venv/
+/bench/qdrant_storage/
+*.test
+*.prof
+.DS_Store
+__pycache__/

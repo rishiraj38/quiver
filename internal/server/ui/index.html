@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>quiver</title>
+<style>
+:root {
+  --bg: #f6f5f1; --panel: #ffffff; --ink: #1b1d21; --muted: #646a73; --line: #e3e1da;
+  --accent: #2456d6; --accent-ink: #ffffff; --chip: #eceae3; --good: #0f7b55;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111317; --panel: #191c22; --ink: #e8e9ec; --muted: #969ca8; --line: #2a2e37;
+    --accent: #7ea2ff; --accent-ink: #0d1220; --chip: #232730; --good: #4fd1a1;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+}
+main { max-width: 860px; margin: 0 auto; padding: 28px 16px 64px; }
+header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+h1 { font-size: 22px; margin: 0; letter-spacing: -0.02em; }
+header p { margin: 0; color: var(--muted); }
+header a { margin-left: auto; color: var(--muted); font-size: 13px; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.stat b { display: block; font: 600 18px/1.3 var(--mono); }
+.stat span { color: var(--muted); font-size: 12px; }
+form { display: flex; gap: 8px; }
+input[type=text] {
+  flex: 1; min-width: 0; padding: 11px 14px; font: inherit; color: inherit;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+}
+input[type=text]:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+button {
+  font: inherit; cursor: pointer; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--panel); color: inherit; padding: 6px 12px;
+}
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; padding: 11px 18px; font-weight: 600; }
+button:disabled { opacity: 0.55; cursor: default; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.row label { color: var(--muted); font-size: 13px; }
+.chip { background: var(--chip); border-color: transparent; border-radius: 999px; padding: 4px 12px; font-size: 13px; }
+.chip[aria-pressed=true] { background: var(--ink); color: var(--bg); }
+input[type=range] { accent-color: var(--accent); width: 150px; }
+output { font: 13px var(--mono); min-width: 3ch; }
+#status { margin: 18px 0 10px; color: var(--muted); font-size: 13px; min-height: 20px; }
+#status b { color: var(--good); font: 600 13px var(--mono); }
+ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+li { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+li .meta { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 12px; color: var(--muted); }
+li .meta .dist { font-family: var(--mono); }
+li .meta .tag { background: var(--chip); border-radius: 999px; padding: 1px 9px; color: var(--ink); }
+li .meta button { margin-left: auto; font-size: 12px; padding: 2px 10px; color: var(--muted); }
+li p { margin: 0; overflow-wrap: anywhere; }
+pre { margin: 0; font: 12px/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.empty { color: var(--muted); padding: 28px 0; text-align: center; }
+@media (max-width: 560px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>quiver</h1>
+    <p>a vector database written from scratch in Go</p>
+    <a href="https://github.com/rishiraj38/quiver">source</a>
+  </header>
+
+  <section class="stats" aria-label="collection">
+    <div class="stat"><b id="s-name">-</b><span>collection</span></div>
+    <div class="stat"><b id="s-count">-</b><span>vectors</span></div>
+    <div class="stat"><b id="s-dim">-</b><span>dimensions</span></div>
+    <div class="stat"><b id="s-metric">-</b><span>metric</span></div>
+  </section>
+
+  <form id="form">
+    <input id="q" type="text" placeholder="Search by meaning, e.g. central bank cuts interest rates" autocomplete="off" aria-label="query">
+    <button class="primary" id="go" type="submit">Search</button>
+  </form>
+
+  <div class="row" id="examples"><label>try</label></div>
+  <div class="row" id="topics" hidden><label>topic</label></div>
+  <div class="row">
+    <label for="ef">ef (beam width)</label>
+    <input id="ef" type="range" min="10" max="400" step="10" value="100">
+    <output id="ef-out">100</output>
+    <label for="k" style="margin-left:12px">k</label>
+    <input id="k" type="range" min="1" max="30" value="8" style="width:90px">
+    <output id="k-out">8</output>
+  </div>
+
+  <div id="status"></div>
+  <ol id="hits"></ol>
+</main>
+
+<script type="module">
+const $ = (id) => document.getElementById(id);
+const MODEL = "Xenova/all-MiniLM-L6-v2"; // the ONNX build of the model the demo data was embedded with
+const EXAMPLES = [
+  "central bank cuts interest rates",
+  "team wins the championship in overtime",
+  "new smartphone chip is faster",
+  "peace talks after border clashes",
+];
+
+let collection = null;
+let topic = null;
+let last = null; // {vector, label} of the latest search, so the sliders can re-run it
+let extractor = null;
+
+async function api(method, path, body) {
+  const res = await fetch(path, { method, body: body ? JSON.stringify(body) : undefined });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || res.statusText);
+  return data;
+}
+
+function setStatus(text, strong) {
+  const el = $("status");
+  el.textContent = text;
+  if (strong) {
+    const b = document.createElement("b");
+    b.textContent = strong;
+    el.append(" ", b);
+  }
+}
+
+async function loadCollection() {
+  const { collections } = await api("GET", "/collections");
+  collection = collections.find((c) => c.name === "news") || collections[0] || null;
+  if (!collection) {
+    $("hits").innerHTML = '<div class="empty">No collections yet. Create one through the HTTP API.</div>';
+    $("go").disabled = true;
+    return;
+  }
+  $("s-name").textContent = collection.name;
+  $("s-count").textContent = collection.count.toLocaleString();
+  $("s-dim").textContent = collection.config.dim;
+  $("s-metric").textContent = collection.config.metric;
+}
+
+// The embedding model runs in the browser, so the server only ever sees
+// vectors. It is fetched on the first text query.
+async function embed(text) {
+  if (!extractor) {
+    setStatus("Loading the embedding model into your browser (about 23 MB, first query only)...");
+    const { pipeline } = await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2");
+    extractor = await pipeline("feature-extraction", MODEL);
+  }
+  const out = await extractor(text, { pooling: "mean", normalize: true });
+  return Array.from(out.data);
+}
+
+async function run(vector, label) {
+  last = { vector, label };
+  const body = { vector, k: +$("k").value, ef: +$("ef").value, with_payload: true };
+  if (topic) body.filter = { must: [{ key: "topic", op: "eq", value: topic }] };
+  const t0 = performance.now();
+  const res = await api("POST", `/collections/${collection.name}/search`, body);
+  const trip = performance.now() - t0;
+  render(res.hits);
+  const where = topic ? ` in ${topic}` : "";
+  setStatus(`${res.hits.length} nearest to ${label}${where}. Round trip ${trip.toFixed(0)} ms, index search`, `${res.took_us} µs`);
+}
+
+function render(hits) {
+  const list = $("hits");
+  list.replaceChildren();
+  if (!hits.length) {
+    list.innerHTML = '<div class="empty">No matches.</div>';
+    return;
+  }
+  for (const h of hits) {
+    const li = document.createElement("li");
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    const dist = document.createElement("span");
+    dist.className = "dist";
+    dist.textContent = `distance ${h.distance.toFixed(3)}`;
+    meta.append(dist);
+    const payload = h.payload || {};
+    if (payload.topic) {
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = payload.topic;
+      meta.append(tag);
+      $("topics").hidden = false;
+    }
+    const more = document.createElement("button");
+    more.type = "button";
+    more.textContent = "more like this";
+    more.onclick = () => similar(h.id);
+    meta.append(more);
+    li.append(meta);
+    if (typeof payload.text === "string") {
+      const p = document.createElement("p");
+      p.textContent = payload.text;
+      li.append(p);
+    } else {
+      const pre = document.createElement("pre");
+      pre.textContent = `id ${h.id}  ${JSON.stringify(payload)}`;
+      li.append(pre);
+    }
+    list.append(li);
+  }
+}
+
+async function similar(id) {
+  try {
+    const p = await api("GET", `/collections/${collection.name}/points/${id}`);
+    await run(p.vector, `point ${id}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (e) {
+    setStatus(e.message);
+  }
+}
+
+async function searchText(text) {
+  if (!collection || !text.trim()) return;
+  $("go").disabled = true;
+  try {
+    const vector = await embed(text);
+    if (vector.length !== collection.config.dim) {
+      throw new Error(`Text search needs a ${vector.length}-dimension collection; "${collection.name}" has ${collection.config.dim}. Use "more like this" instead.`);
+    }
+    await run(vector, `"${text}"`);
+  } catch (e) {
+    setStatus(e.message);
+  } finally {
+    $("go").disabled = false;
+  }
+}
+
+$("form").onsubmit = (e) => {
+  e.preventDefault();
+  searchText($("q").value);
+};
+
+for (const text of EXAMPLES) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "chip";
+  b.textContent = text;
+  b.onclick = () => {
+    $("q").value = text;
+    searchText(text);
+  };
+  $("examples").append(b);
+}
+
+for (const name of ["World", "Sports", "Business", "Sci/Tech"]) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "chip";
+  b.textContent = name;
+  b.setAttribute("aria-pressed", "false");
+  b.onclick = () => {
+    topic = topic === name ? null : name;
+    for (const c of $("topics").querySelectorAll("button")) {
+      c.setAttribute("aria-pressed", String(c.textContent === topic));
+    }
+    if (last) run(last.vector, last.label).catch((e) => setStatus(e.message));
+  };
+  $("topics").append(b);
+}
+
+for (const id of ["ef", "k"]) {
+  $(id).oninput = () => ($(`${id}-out`).textContent = $(id).value);
+  $(id).onchange = () => last && run(last.vector, last.label).catch((e) => setStatus(e.message));
+}
+
+try {
+  await loadCollection();
+  // Something to look at before the model is needed: neighbours of a stored point.
+  if (collection && collection.count > 0) {
+    const q = new URLSearchParams(location.search).get("q");
+    if (q) {
+      $("q").value = q;
+      await searchText(q);
+    } else {
+      await similar(1).catch(() => setStatus("Type a query to search."));
+    }
+  }
+} catch (e) {
+  setStatus(e.message);
+}
+</script>
+</body>
+</html>

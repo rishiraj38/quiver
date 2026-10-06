@@ -1,0 +1,117 @@
+{
+  "engine": "faiss",
+  "dataset": "sift-128-euclidean",
+  "metric": "l2",
+  "n": 1000000,
+  "dim": 128,
+  "n_queries": 10000,
+  "k": 10,
+  "ground_truth": "shipped",
+  "params": {
+    "m": 16,
+    "ef_construction": 200
+  },
+  "build": {
+    "seconds": 51.29,
+    "threads": 11,
+    "rss_bytes": 1267892224,
+    "rss_before_bytes": 1088684032,
+    "peak_rss_bytes": 1267892224
+  },
+  "serialize": {
+    "write_seconds": 0.137,
+    "load_seconds": 0.272,
+    "bytes": 656258362
+  },
+  "search": [
+    {
+      "ef": 10,
+      "recall": 0.7157,
+      "qps_single": 32904.3,
+      "qps_all": 175791.1,
+      "threads_all": 11,
+      "p50_ms": 0.0294,
+      "p95_ms": 0.0429,
+      "p99_ms": 0.0506
+    },
+    {
+      "ef": 20,
+      "recall": 0.84599,
+      "qps_single": 21383.8,
+      "qps_all": 132865.5,
+      "threads_all": 11,
+      "p50_ms": 0.046,
+      "p95_ms": 0.0631,
+      "p99_ms": 0.073
+    },
+    {
+      "ef": 40,
+      "recall": 0.93357,
+      "qps_single": 13325.4,
+      "qps_all": 72057.3,
+      "threads_all": 11,
+      "p50_ms": 0.0759,
+      "p95_ms": 0.0945,
+      "p99_ms": 0.1081
+    },
+    {
+      "ef": 80,
+      "recall": 0.97752,
+      "qps_single": 7177.2,
+      "qps_all": 40531.6,
+      "threads_all": 11,
+      "p50_ms": 0.1421,
+      "p95_ms": 0.1744,
+      "p99_ms": 0.1882
+    },
+    {
+      "ef": 120,
+      "recall": 0.98899,
+      "qps_single": 5053.4,
+      "qps_all": 30804.2,
+      "threads_all": 11,
+      "p50_ms": 0.2029,
+      "p95_ms": 0.2454,
+      "p99_ms": 0.271
+    },
+    {
+      "ef": 200,
+      "recall": 0.9958,
+      "qps_single": 3179.0,
+      "qps_all": 18058.9,
+      "threads_all": 11,
+      "p50_ms": 0.3229,
+      "p95_ms": 0.3853,
+      "p99_ms": 0.4243
+    },
+    {
+      "ef": 400,
+      "recall": 0.99876,
+      "qps_single": 1578.7,
+      "qps_all": 9773.8,
+      "threads_all": 11,
+      "p50_ms": 0.649,
+      "p95_ms": 0.7758,
+      "p99_ms": 0.8351
+    }
+  ],
+  "runs": 3,
+  "system": {
+    "cpu": "Apple M3 Pro",
+    "logical_cpus": 11,
+    "os": "darwin",
+    "arch": "arm64"
+  },
+  "versions": {
+    "faiss": "1.15.1",
+    "python": "3.12.12",
+    "numpy": "2.5.3"
+  },
+  "notes": [
+    "IndexHNSWFlat, in-process, called from Python through SWIG.",
+    "qps_single: omp threads = 1, one query per search() call.",
+    "qps_all: all queries in one search() call, parallelised by FAISS over OpenMP threads.",
+    "recall is id overlap with the true top-k; ties in distance are not credited."
+  ],
+  "timestamp": "2026-10-06T16:59:09+0530"
+}

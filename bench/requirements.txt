@@ -1,0 +1,6 @@
+numpy
+h5py
+faiss-cpu
+hnswlib
+qdrant-client
+matplotlib

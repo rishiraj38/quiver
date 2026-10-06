@@ -1,0 +1,117 @@
+{
+  "engine": "quiver",
+  "dataset": "sift-128-euclidean",
+  "metric": "l2",
+  "n": 1000000,
+  "dim": 128,
+  "n_queries": 10000,
+  "k": 10,
+  "ground_truth": "shipped",
+  "params": {
+    "ef_construction": 200,
+    "m": 16
+  },
+  "build": {
+    "seconds": 56.91,
+    "threads": 11,
+    "rss_bytes": 1367638016,
+    "rss_before_bytes": 1041072128,
+    "peak_rss_bytes": 1367638016,
+    "heap_bytes": 1286224600,
+    "heap_before_bytes": 518331856
+  },
+  "serialize": {
+    "write_seconds": 0.264,
+    "load_seconds": 0.666,
+    "bytes": 660520144
+  },
+  "search": [
+    {
+      "ef": 10,
+      "recall": 0.72417,
+      "qps_single": 24712.3,
+      "qps_all": 154606.4,
+      "threads_all": 11,
+      "p50_ms": 0.0395,
+      "p95_ms": 0.0579,
+      "p99_ms": 0.0677
+    },
+    {
+      "ef": 20,
+      "recall": 0.85158,
+      "qps_single": 15915.2,
+      "qps_all": 99127.2,
+      "threads_all": 11,
+      "p50_ms": 0.0629,
+      "p95_ms": 0.0854,
+      "p99_ms": 0.0975
+    },
+    {
+      "ef": 40,
+      "recall": 0.93699,
+      "qps_single": 9349.3,
+      "qps_all": 57848,
+      "threads_all": 11,
+      "p50_ms": 0.1091,
+      "p95_ms": 0.1402,
+      "p99_ms": 0.1592
+    },
+    {
+      "ef": 80,
+      "recall": 0.97935,
+      "qps_single": 5254.2,
+      "qps_all": 30829,
+      "threads_all": 11,
+      "p50_ms": 0.1966,
+      "p95_ms": 0.245,
+      "p99_ms": 0.2683
+    },
+    {
+      "ef": 120,
+      "recall": 0.99056,
+      "qps_single": 3849.3,
+      "qps_all": 20619.1,
+      "threads_all": 11,
+      "p50_ms": 0.2704,
+      "p95_ms": 0.3315,
+      "p99_ms": 0.353
+    },
+    {
+      "ef": 200,
+      "recall": 0.99652,
+      "qps_single": 2384.7,
+      "qps_all": 15175.3,
+      "threads_all": 11,
+      "p50_ms": 0.4325,
+      "p95_ms": 0.549,
+      "p99_ms": 0.6053
+    },
+    {
+      "ef": 400,
+      "recall": 0.99879,
+      "qps_single": 1380.7,
+      "qps_all": 8150.9,
+      "threads_all": 11,
+      "p50_ms": 0.7523,
+      "p95_ms": 0.947,
+      "p99_ms": 1.0162
+    }
+  ],
+  "runs": 3,
+  "system": {
+    "cpu": "Apple M3 Pro",
+    "logical_cpus": 11,
+    "os": "darwin",
+    "arch": "arm64"
+  },
+  "versions": {
+    "go": "go1.24.4"
+  },
+  "notes": [
+    "In-process Go, no cgo, no SIMD assembly.",
+    "qps_single: one goroutine, one Search call per query.",
+    "qps_all: one Search call per query from -threads goroutines.",
+    "recall is id overlap with the true top-k; ties in distance are not credited."
+  ],
+  "timestamp": "2026-10-06T17:03:54+0530"
+}

@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: quiver
+    runtime: docker
+    dockerfilePath: ./Dockerfile.demo
+    plan: free
+    healthCheckPath: /healthz

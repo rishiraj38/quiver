@@ -1,0 +1,117 @@
+{
+  "engine": "hnswlib",
+  "dataset": "sift-128-euclidean",
+  "metric": "l2",
+  "n": 1000000,
+  "dim": 128,
+  "n_queries": 10000,
+  "k": 10,
+  "ground_truth": "shipped",
+  "params": {
+    "m": 16,
+    "ef_construction": 200
+  },
+  "build": {
+    "seconds": 82.16,
+    "threads": 11,
+    "rss_bytes": 1393115136,
+    "rss_before_bytes": 1077805056,
+    "peak_rss_bytes": 1393344512
+  },
+  "serialize": {
+    "write_seconds": 0.147,
+    "load_seconds": 1.607,
+    "bytes": 660519172
+  },
+  "search": [
+    {
+      "ef": 10,
+      "recall": 0.7082,
+      "qps_single": 18268.5,
+      "qps_all": 110567.7,
+      "threads_all": 11,
+      "p50_ms": 0.0534,
+      "p95_ms": 0.077,
+      "p99_ms": 0.09
+    },
+    {
+      "ef": 20,
+      "recall": 0.83874,
+      "qps_single": 12279.3,
+      "qps_all": 74302.4,
+      "threads_all": 11,
+      "p50_ms": 0.0813,
+      "p95_ms": 0.1088,
+      "p99_ms": 0.1229
+    },
+    {
+      "ef": 40,
+      "recall": 0.9269,
+      "qps_single": 7596.5,
+      "qps_all": 44418.8,
+      "threads_all": 11,
+      "p50_ms": 0.1344,
+      "p95_ms": 0.1667,
+      "p99_ms": 0.1855
+    },
+    {
+      "ef": 80,
+      "recall": 0.97437,
+      "qps_single": 4400.4,
+      "qps_all": 26415.6,
+      "threads_all": 11,
+      "p50_ms": 0.2354,
+      "p95_ms": 0.2841,
+      "p99_ms": 0.3102
+    },
+    {
+      "ef": 120,
+      "recall": 0.98784,
+      "qps_single": 3136.9,
+      "qps_all": 18328.0,
+      "threads_all": 11,
+      "p50_ms": 0.3312,
+      "p95_ms": 0.4007,
+      "p99_ms": 0.4456
+    },
+    {
+      "ef": 200,
+      "recall": 0.99563,
+      "qps_single": 2055.9,
+      "qps_all": 12198.6,
+      "threads_all": 11,
+      "p50_ms": 0.5055,
+      "p95_ms": 0.618,
+      "p99_ms": 0.6748
+    },
+    {
+      "ef": 400,
+      "recall": 0.99867,
+      "qps_single": 1143.4,
+      "qps_all": 6760.4,
+      "threads_all": 11,
+      "p50_ms": 0.9099,
+      "p95_ms": 1.1458,
+      "p99_ms": 1.255
+    }
+  ],
+  "runs": 3,
+  "system": {
+    "cpu": "Apple M3 Pro",
+    "logical_cpus": 11,
+    "os": "darwin",
+    "arch": "arm64"
+  },
+  "versions": {
+    "hnswlib": "0.8.0",
+    "python": "3.12.12",
+    "numpy": "2.5.3"
+  },
+  "notes": [
+    "In-process, called from Python through pybind11.",
+    "qps_single: num_threads = 1, one query per knn_query() call.",
+    "qps_all: all queries in one knn_query() call, parallelised by hnswlib's thread pool.",
+    "recall is id overlap with the true top-k; ties in distance are not credited."
+  ],
+  "timestamp": "2026-10-06T17:01:52+0530"
+}

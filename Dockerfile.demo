@@ -1,0 +1,18 @@
+# Public demo image: the server in read-only mode with 20,000 pre-embedded
+# news articles (built by examples/semantic_search.py) baked in.
+FROM golang:1.24-alpine AS build
+WORKDIR /src
+COPY go.mod ./
+COPY cmd ./cmd
+COPY internal ./internal
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /quiver ./cmd/quiver
+
+FROM alpine:3.20 AS data
+ADD https://github.com/rishiraj38/quiver/releases/download/demo-data/quiver-demo-data.tar.gz /tmp/data.tar.gz
+RUN mkdir /data && tar -xzf /tmp/data.tar.gz -C /data
+
+FROM gcr.io/distroless/static-debian12:nonroot
+COPY --from=build /quiver /quiver
+COPY --from=data --chown=nonroot:nonroot /data /data
+EXPOSE 6333
+ENTRYPOINT ["/quiver", "-data", "/data", "-read-only", "-sync", "never", "-snapshot-interval", "0"]

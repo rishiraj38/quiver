@@ -223,7 +223,7 @@ func main() {
 		System:      systemInfo{CPU: cpuModel(), LogicalCPUs: runtime.NumCPU(), OS: runtime.GOOS, Arch: runtime.GOARCH},
 		Versions:    map[string]string{"go": runtime.Version()},
 		Notes: []string{
-			"In-process Go, no cgo, no SIMD assembly.",
+			"In-process Go, no cgo; distance kernels are NEON assembly on arm64, portable Go elsewhere.",
 			"qps_single: one goroutine, one Search call per query.",
 			"qps_all: one Search call per query from -threads goroutines.",
 			"recall is id overlap with the true top-k; ties in distance are not credited.",

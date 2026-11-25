@@ -67,7 +67,8 @@ finishes. It touches no other container.
   query takes tens of microseconds, and is noise at high ef.
 - **SIMD.** FAISS ships NEON kernels for arm64. hnswlib's hand-written kernels
   are SSE/AVX only, so on arm64 it runs its scalar loop as vectorised by the
-  compiler. quiver is pure Go with no assembly.
+  compiler. quiver uses its own NEON assembly kernels on arm64
+  (`internal/vec`), and portable Go elsewhere.
 - **Hardware.** Numbers in `results/` come from one machine (CPU model and
   core count are recorded in each JSON). Compare engines within a run, not
   against numbers from other hardware.

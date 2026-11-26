@@ -1,3 +1,5 @@
+// Experimental code, written with the help of an LLM.
+
 package hnsw
 
 import (

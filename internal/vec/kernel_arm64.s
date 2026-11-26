@@ -1,3 +1,5 @@
+// Experimental code, written with the help of an LLM.
+
 #include "textflag.h"
 
 // The Go assembler has no mnemonics for the vector float ops used here, so

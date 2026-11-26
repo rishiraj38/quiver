@@ -1,3 +1,5 @@
+// Experimental code, written with the help of an LLM.
+
 // Package vec holds the distance kernels shared by every index.
 package vec
 

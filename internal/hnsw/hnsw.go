@@ -1,3 +1,5 @@
+// Experimental code, written with the help of an LLM.
+
 // Package hnsw implements a Hierarchical Navigable Small World graph index
 // (Malkov & Yashunin, 2016).
 package hnsw

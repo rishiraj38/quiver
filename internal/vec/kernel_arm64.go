@@ -1,3 +1,5 @@
+// Experimental code, written with the help of an LLM.
+
 package vec
 
 // NEON is part of the arm64 baseline, so no feature detection is needed.

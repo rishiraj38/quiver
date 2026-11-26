@@ -1,3 +1,5 @@
+// Experimental code, written with the help of an LLM.
+
 package hnsw
 
 // cand is a node paired with its distance to whatever is being searched for.

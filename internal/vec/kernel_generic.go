@@ -1,3 +1,5 @@
+// Experimental code, written with the help of an LLM.
+
 //go:build !arm64
 
 package vec
